@@ -1,0 +1,216 @@
+{
+  "version": "1.0",
+  "description": "合同风险审查 few-shot 案例库。用于向 RiskReviewAgent 提供边界案例，减少过拟合特定测试集。新增误报/漏报样本时，优先追加此文件，而非修改 system prompt。",
+  "cases": [
+    {
+      "id": "penalty_diff_base_same_rate_safe",
+      "contract_types": ["买卖合同", "技术服务合同", "通用"],
+      "keywords": ["违约金", "逾期", "计算基数", "总金额", "逾期金额"],
+      "clause_text": "甲方逾期交货的，按合同总金额的0.5%支付违约金；乙方逾期付款的，按逾期付款金额的0.5%支付违约金。",
+      "is_risk": false,
+      "risk_type_if_true": "权利义务失衡",
+      "explanation": "双方违约金计算基数不同（一方按合同总额、一方按逾期金额），但比例相同且未超过日千分之一红线。商业合同中根据违约情形选择不同计算基数是常见做法，不构成权利义务失衡。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.15
+      }
+    },
+    {
+      "id": "penalty_plus_damage_supplement_safe",
+      "contract_types": ["保密协议", "买卖合同", "通用"],
+      "keywords": ["违约金", "赔偿", "实际损失", "维权费用"],
+      "clause_text": "乙方违约应向甲方支付违约金人民币80,000元；若该违约金不足以弥补甲方实际损失及合理维权费用的，乙方应就差额部分予以赔偿。",
+      "is_risk": false,
+      "risk_type_if_true": "违约金与实际损失重复主张",
+      "explanation": "条款采用‘违约金补足差额’结构，符合民法典违约金补偿性原则，不属于双重赔偿或重复主张。只有‘并行全额主张固定违约金 + 全额实际损失’才构成风险。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.2
+      }
+    },
+    {
+      "id": "penalty_plus_damage_double_recovery_risk",
+      "contract_types": ["保密协议", "买卖合同", "通用"],
+      "keywords": ["违约金", "赔偿", "实际损失", "维权费用"],
+      "clause_text": "乙方违约应向甲方支付违约金人民币80,000元，并赔偿甲方全部实际损失及维权费用。",
+      "is_risk": true,
+      "risk_type_if_true": "违约金与实际损失重复主张",
+      "explanation": "条款要求同时支付固定违约金并全额赔偿实际损失，未说明违约金用于填补损失、不足部分再补差额，构成责任叠加，可能被法院调减。",
+      "expected_output": {
+        "level": "medium",
+        "risk_type": "违约金与实际损失重复主张",
+        "confidence": 0.75
+      }
+    },
+    {
+      "id": "confidential_until_public_safe",
+      "contract_types": ["保密协议", "通用"],
+      "keywords": ["保密", "持续", "合法公开", "保密期限"],
+      "clause_text": "乙方的保密义务持续至相关信息被合法公开或本协议约定的保密期限届满为止。",
+      "is_risk": false,
+      "risk_type_if_true": "永久保密义务",
+      "explanation": "‘持续至信息被合法公开’或‘保密期限内’是正常终止条件，不是永久、无限期或直至一方死亡的义务。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.1
+      }
+    },
+    {
+      "id": "jurisdiction_at_party_a_safe",
+      "contract_types": ["通用"],
+      "keywords": ["管辖", "甲方所在地", "法院", "争议解决"],
+      "clause_text": "因本合同引起的争议，双方协商不成的，任何一方均可向甲方所在地有管辖权的人民法院提起诉讼。",
+      "is_risk": false,
+      "risk_type_if_true": "管辖约定不公平",
+      "explanation": "约定由甲方所在地法院管辖是常见争议解决条款，通常不构成法律风险。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.1
+      }
+    },
+    {
+      "id": "missing_quality_standard_safe",
+      "contract_types": ["买卖合同", "技术服务合同", "通用"],
+      "keywords": ["质量标准", "验收", "未约定", "国家标准"],
+      "clause_text": "产品质量应符合国家标准或行业标准；双方未另行约定特殊质量要求的，按通常标准履行。",
+      "is_risk": false,
+      "risk_type_if_true": "缺少质量标准",
+      "explanation": "合同未约定额外质量标准时，法律已提供国家标准、行业标准、通常标准等默认规则，单纯‘未约定’不构成风险。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.15
+      }
+    },
+    {
+      "id": "fixed_penalty_consider_subject_safe",
+      "contract_types": ["通用"],
+      "keywords": ["违约金", "固定", "人民币", "赔偿"],
+      "clause_text": "任何一方违约，应向守约方支付违约金人民币5,000元。",
+      "is_risk": false,
+      "risk_type_if_true": "违约金过高",
+      "explanation": "固定金额违约金不能仅因绝对值大就认定过高，必须结合合同标的、实际损失、履行情况等综合判断。本条款未给出具体标的，无法直接判定过高。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.2
+      }
+    },
+    {
+      "id": "deposit_one_month_safe",
+      "contract_types": ["租赁合同"],
+      "keywords": ["押金", "一个月", "租金", "退还"],
+      "clause_text": "乙方应于签订本合同时向甲方支付相当于一个月租金的押金；租赁期满且乙方结清费用、交还房屋后，甲方应无息退还押金。",
+      "is_risk": false,
+      "risk_type_if_true": "押金条款不合理",
+      "explanation": "租赁合同约定一个月押金并按约定条件退还，是正常商业安排，不属于风险。",
+      "expected_output": {
+        "level": "low",
+        "risk_type": "无明显风险",
+        "confidence": 0.1
+      }
+    },
+    {
+      "id": "daily_penalty_exceeds_limit_risk",
+      "contract_types": ["买卖合同", "借款合同", "技术服务合同", "通用"],
+      "keywords": ["违约金", "日", "千分之一", "百分之", "逾期"],
+      "clause_text": "乙方逾期付款的，每逾期一日按合同总金额的5%支付违约金。",
+      "is_risk": true,
+      "risk_type_if_true": "违约金过高",
+      "explanation": "日违约金5%远超主债权千分之一（0.1%）的红线，年化约1825%，显著高于实际损失，属于明显过高。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "违约金过高",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "payment_before_delivery_no_return_risk",
+      "contract_types": ["买卖合同", "通用"],
+      "keywords": ["款到发货", "概不退换", "不得", "异议", "验收"],
+      "clause_text": "款到发货，概不退换。乙方在签收时仅可核对数量，不得开箱检验质量。",
+      "is_risk": true,
+      "risk_type_if_true": "排除对方主要法定权利",
+      "explanation": "条款通过'款到发货、概不退换、不得检验'等表述，剥夺了买受人的验收权、检验权和质量异议权，违反民法典关于买受人权利的强制性规定。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "排除对方主要法定权利",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "exclude_inspection_right_risk",
+      "contract_types": ["买卖合同"],
+      "keywords": ["概不退换", "不得", "检验", "验收", "开箱"],
+      "clause_text": "乙方应在收到货物后立即签收，签收后概不退换，且不得开箱检验质量。",
+      "is_risk": true,
+      "risk_type_if_true": "排除对方主要法定权利",
+      "explanation": "条款明确排除买受人法定的检验权、质量异议权和退货权，违反民法典关于买受人检验期限和瑕疵担保的规定。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "排除对方主要法定权利",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "waive_quality_guarantee_risk",
+      "contract_types": ["买卖合同", "技术服务合同", "通用"],
+      "keywords": ["不提供", "不承担", "质保", "质量保证", "售后服务"],
+      "clause_text": "本合同货物不提供质保及售后服务。",
+      "is_risk": true,
+      "risk_type_if_true": "免除己方法定质量保证义务",
+      "explanation": "条款单方免除出卖人依法应承担的质量瑕疵担保义务和售后服务义务，违反民法典关于出卖人质量担保责任的强制性规定。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "免除己方法定质量保证义务",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "cut_interest_risk",
+      "contract_types": ["借款合同"],
+      "keywords": ["砍头息", "预先扣除", "本金", "实付"],
+      "clause_text": "甲方向乙方出借本金人民币10万元，签约当日预先扣除利息5,000元，实际向乙方支付9.5万元。",
+      "is_risk": true,
+      "risk_type_if_true": "砍头息",
+      "explanation": "出借时预先扣除利息，实际本金应按9.5万元计算，构成砍头息，违反民间借贷司法解释。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "砍头息",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "pledged_equity_not_disclosed_risk",
+      "contract_types": ["股权转让协议"],
+      "keywords": ["质押", "股权", "已质押", "披露"],
+      "clause_text": "甲方将其持有的目标公司30%股权转让给乙方，该股权已质押给第三方，甲方未在协议中向乙方披露该质押情况。",
+      "is_risk": true,
+      "risk_type_if_true": "股权质押未披露",
+      "explanation": "转让已质押股权未向受让方披露，可能导致受让方权利受限，属于重大信息披露瑕疵。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "股权质押未披露",
+        "confidence": 0.9
+      }
+    },
+    {
+      "id": "probation_exceeds_limit_risk",
+      "contract_types": ["劳动合同"],
+      "keywords": ["试用期", "六个月", "一年", "转正"],
+      "clause_text": "本合同期限一年，试用期为六个月；试用期工资为转正工资的60%。",
+      "is_risk": true,
+      "risk_type_if_true": "试用期超长",
+      "explanation": "一年期劳动合同试用期不得超过两个月，且试用期工资不得低于转正工资的80%，该条款明显违反劳动合同法。",
+      "expected_output": {
+        "level": "high",
+        "risk_type": "试用期超长",
+        "confidence": 0.95
+      }
+    }
+  ]
+}

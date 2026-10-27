@@ -1,0 +1,198 @@
+{
+  "principles": [
+    {
+      "id": "proportionality",
+      "name": "比例原则",
+      "description": "违约金、赔偿金、滞纳金、逾期利息、定金、押金等违约责任或担保数额，应与可能造成的损失相当，不得显著高于法定上限或合理范围。",
+      "legal_basis": "《中华人民共和国民法典》第五百八十五条、第五百八十八条、第五百九十一条；民间借贷司法解释第二十五条、第二十八条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "违约责任失衡",
+      "default_level": "high",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【比例原则】：违约金、赔偿金、滞纳金、逾期利息、定金、押金等数额应与可能损失相当，不得显著过高。\n\n请判断该条款是否约定的责任数额明显超过合理范围或法定上限。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "乙方逾期付款的，每逾期一日按合同总金额的5%支付违约金。",
+        "任何一方违约，应向守约方支付合同总金额50%的违约金。",
+        "借款年利率为36%，按月计收复利。"
+      ],
+      "non_violation_examples": [
+        "乙方逾期付款的，每逾期一日按未付金额的万分之五支付违约金。",
+        "任何一方违约，应向守约方支付不超过合同总金额10%的违约金。",
+        "借款年利率为8%，按年结息。"
+      ],
+      "quick_checks": {
+        "enabled": true,
+        "type": "numeric_penalty"
+      }
+    },
+    {
+      "id": "right_preservation",
+      "name": "权利保留原则",
+      "description": "合同不得排除对方依法享有的主要权利，包括但不限于检验权、验收权、质量异议权、退货换货权、解除权、索赔权、抗辩权等。",
+      "legal_basis": "《中华人民共和国民法典》第四百九十七条、第六百二十条、第六百二十一条、第六百一十条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "排除对方主要法定权利",
+      "default_level": "high",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【权利保留原则】：合同不得排除对方依法享有的主要权利，如检验权、验收权、质量异议权、退货换货权、解除权、索赔权等。\n\n请判断该条款是否通过\"概不\"、\"放弃\"、\"不得\"、\"无权\"等表述排除了对方的法定救济权利。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "甲方交付货物后，乙方不得开箱检验，不得提出任何质量异议。",
+        "乙方收到货物后概不退换、概不退货。",
+        "甲方有权随时解除合同，乙方不得提出任何异议。"
+      ],
+      "non_violation_examples": [
+        "乙方应在收到货物后七个工作日内完成检验，逾期未提出书面异议视为验收合格。",
+        "除质量问题外，乙方不得无故退货。",
+        "任何一方严重违约时，守约方有权解除合同。"
+      ],
+      "quick_checks": {
+        "enabled": true,
+        "type": "right_exclusion"
+      }
+    },
+    {
+      "id": "good_faith_fairness",
+      "name": "诚信公平原则",
+      "description": "合同条款应遵循公平原则，不得赋予一方任意单方变更、解除、调整的权利，或设置显失公平的程序性条款。",
+      "legal_basis": "《中华人民共和国民法典》第六条、第五百零九条、第五百三十三条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "权利义务失衡",
+      "default_level": "medium",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【诚信公平原则】：合同应公平确定双方权利义务，不得赋予一方任意单方变更、解除、调整合同的权利，或设置显失公平的程序。\n\n请判断该条款是否使一方可以不受限制地变更、解除、调整合同，而另一方缺乏对等权利。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "甲方有权随时调整服务内容、价格及付款方式，无需征得乙方同意。",
+        "出租方有权随时涨租，承租方不得拒绝。",
+        "公司可随时修改本协议条款，用户继续使用即视为同意。"
+      ],
+      "non_violation_examples": [
+        "合同重大变更应经双方协商一致，并以书面形式确认。",
+        "租金调整应提前三十日书面通知，双方协商一致后执行。",
+        "一方严重违约时，守约方有权解除合同。"
+      ],
+      "quick_checks": {
+        "enabled": true,
+        "type": "good_faith_fairness"
+      }
+    },
+    {
+      "id": "minimum_guarantee",
+      "name": "最低保障原则",
+      "description": "劳动合同、租赁合同等特殊合同中，期限、工资、社保、试用期等约定不得低于法律规定的最低保障标准。",
+      "legal_basis": "《中华人民共和国劳动合同法》第十九条、第二十条、第三十八条；《中华人民共和国民法典》第七百零五条",
+      "applicable_contract_types": ["劳动合同", "租房合同", "通用"],
+      "risk_type": "低于法定最低保障",
+      "default_level": "high",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【最低保障原则】：劳动合同、租赁合同等特殊合同中的期限、工资、社保、试用期等约定不得低于法律规定的最低保障标准。\n\n请判断该条款是否约定了低于法定下限的试用期、工资、社保缴纳义务，或超过法定上限的租赁期限。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "劳动合同期限为两年，试用期为六个月。",
+        "试用期工资为转正工资的60%。",
+        "甲方不为乙方缴纳社会保险费。",
+        "房屋租赁期限为二十五年。"
+      ],
+      "non_violation_examples": [
+        "劳动合同期限为三年，试用期为两个月。",
+        "试用期工资不低于转正工资的80%。",
+        "甲方依法为乙方缴纳社会保险费。",
+        "房屋租赁期限为十年。"
+      ],
+      "quick_checks": {
+        "enabled": true,
+        "type": "minimum_guarantee"
+      }
+    },
+    {
+      "id": "disclosure",
+      "name": "信息披露原则",
+      "description": "一方在签约时应如实披露可能影响对方决策的重大信息，包括标的物瑕疵、权利受限情况、质押、抵押、债务负担、资质缺陷等。",
+      "legal_basis": "《中华人民共和国民法典》第五百条、第六百一十八条；《中华人民共和国公司法》第八十八条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "重大信息披露瑕疵",
+      "default_level": "high",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【信息披露原则】：一方应如实披露可能影响对方决策的重大信息，如标的物瑕疵、权利受限、质押、抵押、债务负担、资质缺陷等。\n\n请判断该条款是否隐瞒了重大信息，或约定转让已质押、已冻结、存在瑕疵的权利/财产而不向对方披露。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "甲方转让已质押股权，未向乙方披露质押情况。",
+        "出售的车辆已抵押，卖方未告知买方。",
+        "公司为其股东的个人债务提供担保，未经股东会决议。"
+      ],
+      "non_violation_examples": [
+        "甲方声明所转让股权不存在质押、冻结或其他权利受限情形。",
+        "卖方已如实告知标的物的已知瑕疵。",
+        "公司为股东提供担保已取得股东会决议。"
+      ]
+    },
+    {
+      "id": "illegal_purpose",
+      "name": "违法目的原则",
+      "description": "合同的标的、用途、交易方式不得违反法律、行政法规的强制性规定，不得损害社会公共利益。",
+      "legal_basis": "《中华人民共和国民法典》第一百五十三条、第六百八十条；民间借贷司法解释第二十五条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "违反法律强制性规定",
+      "default_level": "high",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【违法目的原则】：合同的标的、用途、交易方式不得违反法律、行政法规的强制性规定，不得损害社会公共利益。\n\n请判断该条款是否约定了违法的用途、标的或交易方式，如赌博、洗钱、非法集资、砍头息、流质流押等。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "借款用于赌博、洗钱等非法活动。",
+        "出借时预先扣除利息，实际到手金额低于合同本金。",
+        "债务到期未清偿的，抵押物所有权归债权人所有。"
+      ],
+      "non_violation_examples": [
+        "借款用于乙方生产经营周转。",
+        "出借金额与合同约定本金一致，不得预先扣除任何费用。",
+        "债务到期未清偿的，抵押权人可依法拍卖、变卖抵押物优先受偿。"
+      ],
+      "quick_checks": {
+        "enabled": true,
+        "type": "illegal_purpose"
+      }
+    },
+    {
+      "id": "clarity",
+      "name": "明确性原则",
+      "description": "合同的关键义务、质量标准、计算方式、履行期限、验收标准等应当明确、可执行，不得因约定不明导致一方权益无法保障。",
+      "legal_basis": "《中华人民共和国民法典》第五百一十条、第五百一十一条、第六百一十五条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "约定不明或不可执行",
+      "default_level": "medium",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【明确性原则】：合同的关键义务、质量标准、计算方式、履行期限、验收标准等应当明确、可执行。\n\n请判断该条款是否因约定过于模糊、标准缺失或计算方式不明，导致一方权益无法保障。注意：单纯的\"未约定某事项\"通常不构成风险，只有当条款本身模糊到显失公平时才报告。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "甲方应保证服务质量，但未约定任何质量标准或验收方式。",
+        "违约金按\"合理标准\"计算，未明确具体计算方式。",
+        "乙方应在合理期限内完成交付，但未约定具体期限。"
+      ],
+      "non_violation_examples": [
+        "服务质量应符合国家标准 GB/T XXXX，由双方共同验收。",
+        "违约金按逾期金额的日万分之五计算。",
+        "乙方应于合同签订后三十日内完成交付。"
+      ]
+    },
+    {
+      "id": "non_waivable_liability",
+      "name": "法定责任不可免除原则",
+      "description": "合同不得通过格式条款免除一方的故意或重大过失责任，也不得免除法律规定的最低质量担保、安全保障、信息披露等强制性义务。",
+      "legal_basis": "《中华人民共和国民法典》第四百九十七条、第五百零六条、第六百一十七条",
+      "applicable_contract_types": ["通用"],
+      "risk_type": "免责条款无效",
+      "default_level": "high",
+      "decision_prompt": "你正在审查一条合同条款，判断是否违反【法定责任不可免除原则】：合同不得通过格式条款免除一方的故意或重大过失责任，也不得免除法律规定的最低质量担保、安全保障、信息披露等强制性义务。\n\n请判断该条款是否通过\"概不负责\"、\"不承担任何责任\"、\"免除\"等表述，免除了法定不可免除的责任。\n\n输出 JSON：{\"violated\": true/false, \"level\": \"high/medium/low\", \"confidence\": 0.0-1.0, \"reason\": \"具体理由\", \"suggestion\": \"修改建议\"}",
+      "violation_examples": [
+        "甲方对因故意或重大过失造成的损失不承担任何责任。",
+        "产品存在质量问题，甲方概不负责。",
+        "因甲方原因导致乙方人身损害的，甲方不承担赔偿责任。"
+      ],
+      "non_violation_examples": [
+        "因不可抗力导致的损失，双方互不承担责任。",
+        "甲方对乙方自行使用不当造成的损失不承担责任。",
+        "甲方应承担标的物质量瑕疵担保责任。"
+      ],
+      "quick_checks": {
+        "enabled": true,
+        "type": "waive_liability"
+      }
+    }
+  ],
+  "settings": {
+    "similarity_top_k": 3,
+    "similarity_margin": 0.05,
+    "min_violation_similarity": 0.55,
+    "llm_temperature": 0.1,
+    "llm_max_tokens": 512,
+    "quick_check_confidence": 0.95
+  }
+}

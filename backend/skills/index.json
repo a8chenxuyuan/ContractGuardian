@@ -1,0 +1,61 @@
+{
+  "version": "2.0",
+  "updated_at": "2026-10-22",
+  "description": "合同卫士技能注册清单（agentkit/skills.py 运行时加载）。keywords 为运行时匹配触发词；entry 为重构后真实代码路径。",
+  "skills": [
+    {
+      "id": "contract-review",
+      "name": "合同全链路审查",
+      "summary": "解析合同（docx/pdf/图片OCR）→ 父子切块 → BGE-M3 双路检索 → CRAG 纠错 → 13-Agent 编排输出风险发现。",
+      "trigger": "用户上传合同并要求审查，或要求重新审查已有合同。",
+      "keywords": ["审查", "风险", "复审", "重新审查", "检出"],
+      "entry": "app/review/graph.py（LangGraph 编排）+ app/tasks/celery_tasks.py",
+      "doc": "skills/contract-review/SKILL.md"
+    },
+    {
+      "id": "quick-answer",
+      "name": "合同问答与划词追问",
+      "summary": "基于合同 parsed_data 与检索证据的快速问答通道，支持条款划词上下文与风险项追问，回答携带引用标注。",
+      "trigger": "用户就某份合同提问、或从风险卡/条款文本发起追问。",
+      "keywords": ["为什么", "什么意思", "解释", "追问", "划词", "问答", "怎么回事"],
+      "entry": "app/review/quick_lane.py + POST /review/{sid}/ask",
+      "doc": "skills/quick-answer/SKILL.md"
+    },
+    {
+      "id": "legal-retrieval",
+      "name": "法规检索与溯源",
+      "summary": "本地法规库（父子切块向量）+ Tavily 联网检索兜底，返回带法名/条号/原文的结构化引用。",
+      "trigger": "需要引用法律条文支撑结论，或用户询问法规内容。",
+      "keywords": ["法条", "法规", "法律规定", "法律依据", "民法典", "劳动合同法"],
+      "entry": "app/rag/knowledge_cache.py + app/rag/crag.py",
+      "doc": "skills/legal-retrieval/SKILL.md"
+    },
+    {
+      "id": "version-diff",
+      "name": "双版本对比审查",
+      "summary": "新旧合同版本条款级 difflib 对比，标注新增/删除/修改条款及风险变化。",
+      "trigger": "用户上传同名新版本或明确要求对比两个版本。",
+      "keywords": ["对比", "版本", "新旧", "两个版本", "改动"],
+      "entry": "app/contracts/diff.py",
+      "doc": "skills/version-diff/SKILL.md"
+    },
+    {
+      "id": "date-tracking",
+      "name": "履约日期管家",
+      "summary": "正则提取合同关键日期（签署/生效/到期/付款/交付），按类型分类，30 天内到期自动提醒。",
+      "trigger": "审查完成自动执行；或用户询问合同期限/到期日。",
+      "keywords": ["到期", "期限", "日期", "生效", "签署", "付款时间", "合同期限"],
+      "entry": "app/contracts/date_extractor.py + GET /contracts/{id}/key-dates",
+      "doc": "skills/date-tracking/SKILL.md"
+    },
+    {
+      "id": "feedback-learning",
+      "name": "反例学习与规则沉淀",
+      "summary": "收集用户对风险项的误报反馈，沉淀为检测规则反例，抑制同类误报。",
+      "trigger": "用户标记误报/确认风险后自动执行。",
+      "keywords": ["误报", "反馈", "标记", "不准", "报错了"],
+      "entry": "app/review/learning.py + app/evaluation/",
+      "doc": "skills/feedback-learning/SKILL.md"
+    }
+  ]
+}

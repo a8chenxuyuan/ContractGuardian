@@ -1,0 +1,145 @@
+/* ============================================================
+   合同卫士 · 全局设计系统
+   品牌色：靛蓝 → 紫（法律科技感）
+   ============================================================ */
+
+:root {
+  /* 品牌色 */
+  --cg-primary: #4f46e5;
+  --cg-primary-light: #6366f1;
+  --cg-primary-dark: #4338ca;
+  --cg-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --cg-gradient-soft: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+
+  /* 语义色 */
+  --cg-danger: #ef4444;
+  --cg-warning: #f59e0b;
+  --cg-success: #10b981;
+  --cg-info: #64748b;
+
+  /* 中性色 */
+  --cg-text: #1e293b;
+  --cg-text-secondary: #475569;
+  --cg-text-muted: #94a3b8;
+  --cg-border: #e2e8f0;
+  --cg-bg: #f6f7fb;
+  --cg-card: #ffffff;
+
+  /* 圆角与阴影 */
+  --cg-radius: 12px;
+  --cg-radius-lg: 16px;
+  --cg-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --cg-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --cg-shadow-lg: 0 12px 32px rgba(79, 70, 229, 0.16);
+}
+
+/* ---------- Element Plus 主题覆盖 ---------- */
+:root {
+  --el-color-primary: #4f46e5;
+  --el-color-primary-light-3: #8b86f0;
+  --el-color-primary-light-5: #b3b0f6;
+  --el-color-primary-light-7: #d8d6fa;
+  --el-color-primary-light-8: #e6e5fc;
+  --el-color-primary-light-9: #f1f0fe;
+  --el-color-primary-dark-2: #4338ca;
+  --el-border-radius-base: 8px;
+  --el-font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Segoe UI', sans-serif;
+}
+
+/* ---------- 基础 ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Segoe UI', sans-serif;
+  color: var(--cg-text);
+  background-color: var(--cg-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- 滚动条 ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- 通用卡片 ---------- */
+.cg-card {
+  background: var(--cg-card);
+  border-radius: var(--cg-radius);
+  box-shadow: var(--cg-shadow-sm);
+  border: 1px solid var(--cg-border);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.cg-card:hover {
+  box-shadow: var(--cg-shadow);
+}
+
+/* ---------- 页面进入动画 ---------- */
+.page-fade-enter-active {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+.page-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* ---------- 通用页面标题 ---------- */
+.page-header {
+  margin-bottom: 24px;
+}
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cg-text);
+  letter-spacing: -0.3px;
+}
+.page-header p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--cg-text-muted);
+}
+
+/* ---------- Element Plus 细节打磨 ---------- */
+.el-button {
+  font-weight: 500;
+}
+.el-button--primary {
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+.el-button--primary:hover {
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+.el-card {
+  border-radius: var(--cg-radius);
+  border: 1px solid var(--cg-border);
+}
+.el-dialog {
+  border-radius: var(--cg-radius-lg);
+}
+.el-tag {
+  border-radius: 6px;
+  font-weight: 500;
+}
+.el-message {
+  border-radius: 10px;
+}

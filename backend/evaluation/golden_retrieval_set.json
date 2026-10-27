@@ -1,0 +1,20 @@
+[
+  {"query": "员工试用期最长不能超过多久", "expect_law": "劳动合同法", "expect_article": "第十九条"},
+  {"query": "竞业限制人员离职后能去竞争对手上班吗", "expect_law": "劳动合同法", "expect_article": "第二十三条"},
+  {"query": "违约金约定过高法院会怎么处理", "expect_law": "民法典", "expect_article": "第五百八十五条"},
+  {"query": "对方不履行合同义务我能要求什么", "expect_law": "民法典", "expect_article": "第五百七十七条"},
+  {"query": "什么情况下可以单方面解除合同", "expect_law": "民法典", "expect_article": "第五百六十三条"},
+  {"query": "解除合同需要通知对方吗", "expect_law": "民法典", "expect_article": "第五百六十五条"},
+  {"query": "合同解除之后已经付的钱怎么处理", "expect_law": "民法典", "expect_article": "第五百六十六条"},
+  {"query": "因为疫情停工算不算不可抗力", "expect_law": "民法典", "expect_article": "第五百九十条"},
+  {"query": "合同里没写清楚的内容怎么办", "expect_law": "民法典", "expect_article": "第五百一十条"},
+  {"query": "借款到期不还需要付多少利息", "expect_law": "民法典", "expect_article": "第六百七十六条"},
+  {"query": "借款利息可以随便约定吗", "expect_law": "民法典", "expect_article": "第六百八十条"},
+  {"query": "租房合同最长能签多少年", "expect_law": "民法典", "expect_article": "第七百零五条"},
+  {"query": "合同生效要满足什么条件", "expect_law": "民法典", "expect_article": "第一百四十三条"},
+  {"query": "微信聊天记录算不算书面合同", "expect_law": "民法典", "expect_article": "第四百六十九条"},
+  {"query": "公司不给员工办社保怎么办", "expect_law": "社会保险法", "expect_article": "第五十八条"},
+  {"query": "收购别人公司的股份要走什么程序", "expect_law": "公司法", "expect_article": "第七十一条"},
+  {"query": "合同纠纷应该去哪个法院起诉", "expect_law": "民事诉讼法", "expect_article": "第二十三条"},
+  {"query": "加班费应该按什么标准计算", "expect_law": "劳动法", "expect_article": "第四十四条"}
+]

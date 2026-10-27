@@ -1,0 +1,20 @@
+[
+  {
+    "mode": "baseline",
+    "hit@10": 1.0,
+    "mrr": 0.787,
+    "avg_latency_s": 0.71
+  },
+  {
+    "mode": "hybrid",
+    "hit@10": 1.0,
+    "mrr": 0.787,
+    "avg_latency_s": 0.19
+  },
+  {
+    "mode": "full",
+    "hit@10": 1.0,
+    "mrr": 0.807,
+    "avg_latency_s": 3.93
+  }
+]

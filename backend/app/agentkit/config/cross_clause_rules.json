@@ -1,0 +1,512 @@
+{
+  "version": "2.1.0",
+  "description": "跨条款组合风险规则库。采用宽松的关键词匹配，支持同一条款内同时出现多个风险信号；重点覆盖强制性法律规定和明显不公平条款。",
+  "rules": [
+    {
+      "name": "试用期超长（1-3年期合同）",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "probation",
+          "match": {
+            "contains_all": ["试用期"],
+            "contains_any": ["6个月", "六个月", "6 个月"],
+            "not_contains_any": ["三年以上", "超过三年", "3年以上", "符合", "不超过6个月"]
+          }
+        },
+        {
+          "role": "term",
+          "match": {
+            "contains_any": ["合同期限", "劳动合同期限", "本合同期限"],
+            "not_contains_any": ["三年以上", "超过三年", "3年以上"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "试用期与合同期限需要匹配"
+      },
+      "risk": {
+        "risk_type": "试用期超长",
+        "level": "high",
+        "confidence": 0.92,
+        "reason": "1-3 年期劳动合同试用期不得超过 2 个月，但合同约定 6 个月。"
+      }
+    },
+    {
+      "name": "试用期工资低于法定下限",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "probation_salary",
+          "match": {
+            "contains_any": ["试用期工资", "试用期薪资", "试用期间工资", "试用期报酬"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "试用期工资应不低于转正工资的80%"
+      },
+      "risk": {
+        "risk_type": "试用期工资低于法定下限",
+        "level": "medium",
+        "confidence": 0.82,
+        "reason": "《劳动合同法》第二十条规定，试用期工资不得低于本单位相同岗位最低档工资或劳动合同约定工资的百分之八十。"
+      }
+    },
+    {
+      "name": "规避社保缴费基数",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "waive_social",
+          "match": {
+            "contains_any": ["放弃社保", "不缴纳社保", "放弃社会保险", "不缴纳社会保险", "放弃缴纳社会保险"]
+          }
+        },
+        {
+          "role": "salary_split",
+          "match": {
+            "contains_all": ["基本工资", "绩效", "补贴"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "社保放弃与工资拆分可能关联"
+      },
+      "risk": {
+        "risk_type": "规避社保缴费基数",
+        "level": "high",
+        "confidence": 0.85,
+        "reason": "放弃社保与工资拆分同时出现，可能涉嫌降低社保缴费基数。"
+      }
+    },
+    {
+      "name": "竞业限制未约定补偿",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "non_compete",
+          "match": {
+            "contains_any": ["竞业限制", "竞业禁止"]
+          }
+        },
+        {
+          "role": "no_compensation",
+          "match": {
+            "contains_all": ["竞业限制"],
+            "contains_any": ["无需支付", "不支付", "无补偿"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "竞业限制义务与补偿义务失衡"
+      },
+      "risk": {
+        "risk_type": "竞业限制未约定补偿",
+        "level": "high",
+        "confidence": 0.88,
+        "reason": "约定竞业限制却未明确经济补偿，劳动者义务与权利严重失衡，条款可能被认定无效。"
+      }
+    },
+    {
+      "name": "试用期任意解除",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "probation",
+          "match": {
+            "contains_any": ["试用期"]
+          }
+        },
+        {
+          "role": "arbitrary_termination",
+          "match": {
+            "contains_all": ["试用期"],
+            "contains_any": ["随时解除", "无条件解除", "不需要理由", "无需理由"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "试用期解除条件违反法定要求"
+      },
+      "risk": {
+        "risk_type": "试用期任意解除",
+        "level": "high",
+        "confidence": 0.9,
+        "reason": "试用期解除劳动合同仍需符合《劳动合同法》第二十一条规定，不得任意无条件解除。"
+      }
+    },
+    {
+      "name": "违法约定违约金",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "penalty",
+          "match": {
+            "contains_any": ["违约金"]
+          }
+        },
+        {
+          "role": "no_training_noncompete",
+          "match": {
+            "contains_any": ["服务期", "竞业限制", "专项培训"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "违约金条款超出法定适用场景"
+      },
+      "risk": {
+        "risk_type": "违法约定违约金",
+        "level": "high",
+        "confidence": 0.85,
+        "reason": "除服务期和竞业限制外，用人单位不得与劳动者约定由劳动者承担违约金。"
+      }
+    },
+    {
+      "name": "加班未约定加班费",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "overtime",
+          "match": {
+            "contains_any": ["加班", "延时工作", "休息日工作"]
+          }
+        },
+        {
+          "role": "no_overtime_pay",
+          "match": {
+            "contains_all": ["加班"],
+            "contains_any": ["无加班费", "不支付加班费", "无偿加班", "无加班工资"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "加班安排与报酬义务冲突"
+      },
+      "risk": {
+        "risk_type": "加班未约定加班费",
+        "level": "high",
+        "confidence": 0.87,
+        "reason": "安排加班应当依法支付加班费，约定无偿加班违反劳动法第四十四条规定。"
+      }
+    },
+    {
+      "name": "工作地点模糊且可任意调岗",
+      "applies_to": ["劳动合同"],
+      "clause_groups": [
+        {
+          "role": "vague_location",
+          "match": {
+            "contains_any": ["全国各地", "全国范围内", "公司指定地点", "根据公司需要"]
+          }
+        },
+        {
+          "role": "arbitrary_transfer",
+          "match": {
+            "contains_any": ["公司有权调整", "甲方有权调整", "根据经营需要调整", "变更工作岗位"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "工作地点与调岗条款共同扩大用人单位单方权利"
+      },
+      "risk": {
+        "risk_type": "工作地点模糊且可任意调岗",
+        "level": "medium",
+        "confidence": 0.78,
+        "reason": "工作地点约定过于宽泛且赋予用人单位任意调岗权，可能损害劳动者权益。"
+      }
+    },
+    {
+      "name": "借款利率超过法定上限",
+      "applies_to": ["借款合同"],
+      "clause_groups": [
+        {
+          "role": "interest",
+          "match": {
+            "contains_any": ["利率", "利息", "年利率"]
+          }
+        },
+        {
+          "role": "high_rate",
+          "match": {
+            "contains_any": ["24%", "36%", "月息", "日息"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "利率约定可能超出司法保护上限"
+      },
+      "risk": {
+        "risk_type": "利率超过法定上限",
+        "level": "high",
+        "confidence": 0.82,
+        "reason": "民间借贷利率超过合同成立时一年期 LPR 四倍的部分不受司法保护。"
+      }
+    },
+    {
+      "name": "借款砍头息",
+      "applies_to": ["借款合同"],
+      "clause_groups": [
+        {
+          "role": "loan_principal",
+          "match": {
+            "contains_any": ["借款金额", "借款本金", "出借", "借给", "借款人民币", "借款数额"]
+          }
+        },
+        {
+          "role": "deduction",
+          "match": {
+            "contains_any": ["预先扣除", "提前扣除", "砍头息", "一次性扣除", "先行扣除", "利息扣除", "实际收到", "实付", "实际支付", "实际交付", "实得", "到账"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "本金与实际支付金额不一致"
+      },
+      "risk": {
+        "risk_type": "砍头息",
+        "level": "high",
+        "confidence": 0.85,
+        "reason": "借款本金与实际交付金额不一致，存在预先扣除利息（砍头息）的嫌疑，违反《民法典》第六百七十条规定，应以实际收到的金额认定本金。"
+      }
+    },
+    {
+      "name": "借款用途违法",
+      "applies_to": ["借款合同"],
+      "clause_groups": [
+        {
+          "role": "loan_purpose",
+          "match": {
+            "contains_any": ["借款用途", "用于", "用途为", "资金使用", "资金用途"]
+          }
+        },
+        {
+          "role": "illegal_purpose",
+          "match": {
+            "contains_any": ["赌博", "赌债", "非法", "违法", "犯罪", "毒品", "走私", "洗钱"],
+            "not_contains_any": ["不得用于", "禁止用于", "不应", "不能用于", "不得挪作", "绝不", "严禁"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "借款用途违反法律强制性规定"
+      },
+      "risk": {
+        "risk_type": "借款用途违法",
+        "level": "high",
+        "confidence": 0.9,
+        "reason": "借款用途约定为赌博、非法活动或其他违法行为，违反法律强制性规定，可能导致借款合同无效。"
+      }
+    },
+    {
+      "name": "股权转让付款与变更登记错位",
+      "applies_to": ["股权转让协议"],
+      "clause_groups": [
+        {
+          "role": "payment",
+          "match": {
+            "contains_any": ["支付全部转让款", "付清全部转让款", "全部转让款支付完毕后", "付清转让款", "支付完毕", "支付全款"]
+          }
+        },
+        {
+          "role": "registration",
+          "match": {
+            "contains_any": ["变更登记", "工商变更", "股东名册变更", "股东会决议", "修改章程"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "付款节点与股权变更登记节点需匹配"
+      },
+      "risk": {
+        "risk_type": "付款与股权变更登记失衡",
+        "level": "medium",
+        "confidence": 0.78,
+        "reason": "付款条件与股权变更登记条件明显错位，可能导致一方付款后无法及时取得股权或权利义务失衡。"
+      }
+    },
+    {
+      "name": "股权质押未披露",
+      "applies_to": ["股权转让协议"],
+      "clause_groups": [
+        {
+          "role": "equity_transfer",
+          "match": {
+            "contains_any": ["股权转让", "转让股权", "出让股权", "受让", "标的股权", "转让股份"]
+          }
+        },
+        {
+          "role": "pledge_undisclosed",
+          "match": {
+            "contains_any": ["质押", "已质押", "抵押", "查封", "冻结", "权利受限", "权利负担", "未披露", "隐瞒", "未告知"],
+            "not_contains_any": ["不存在", "无", "未设定", "未设立", "未受到", "未涉及", "保证", "承诺"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "转让股权的权利瑕疵应披露"
+      },
+      "risk": {
+        "risk_type": "股权质押未披露",
+        "level": "high",
+        "confidence": 0.88,
+        "reason": "转让的股权已设定质押或其他权利负担，转让方未向受让方充分披露，可能导致受让方取得的权利存在瑕疵，违反诚实信用原则。"
+      }
+    },
+    {
+      "name": "目标公司承担股东个人债务",
+      "applies_to": ["股权转让协议"],
+      "clause_groups": [
+        {
+          "role": "company_liability",
+          "match": {
+            "contains_any": ["目标公司承担", "公司承担", "由公司承担", "公司负责偿还", "公司代为偿还"]
+          }
+        },
+        {
+          "role": "shareholder_debt",
+          "match": {
+            "contains_any": ["股东债务", "原股东", "转让方债务", "个人债务", "股东个人", "转让方个人"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "公司财产与股东债务应分离"
+      },
+      "risk": {
+        "risk_type": "公司承担股东个人债务",
+        "level": "high",
+        "confidence": 0.87,
+        "reason": "约定由目标公司承担原股东个人债务，可能导致公司资产不当减少，损害公司债权人利益，违反公司法资本维持原则。"
+      }
+    },
+    {
+      "name": "保密义务无期限或永久保密",
+      "applies_to": ["保密协议"],
+      "clause_groups": [
+        {
+          "role": "confidentiality",
+          "match": {
+            "contains_any": ["保密义务", "保密期限", "永久保密", "保密信息", "保密条款"]
+          }
+        },
+        {
+          "role": "unlimited_term",
+          "match": {
+            "contains_any": ["永久", "无限期", "长期", "直至乙方死亡", "直至一方死亡", "终身", "永远"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "保密期限约定需合理"
+      },
+      "risk": {
+        "risk_type": "保密期限不合理",
+        "level": "medium",
+        "confidence": 0.75,
+        "reason": "保密义务约定为永久或无限期，可能过度限制接收方权利，建议约定合理期限或明确终止条件。"
+      }
+    },
+    {
+      "name": "保密协议缺少必要条款",
+      "applies_to": ["保密协议"],
+      "clause_groups": [
+        {
+          "role": "confidentiality_basic",
+          "match": {
+            "contains_any": ["保密义务", "保密信息", "保密"]
+          }
+        },
+        {
+          "role": "missing_essential",
+          "match": {
+            "contains_any": ["未约定", "缺少", "缺失"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "RELATES_TO",
+        "reason": "保密协议应包含保密信息定义、除外情形、返还销毁等必要条款"
+      },
+      "risk": {
+        "risk_type": "保密协议缺少必要条款",
+        "level": "medium",
+        "confidence": 0.72,
+        "reason": "保密协议未对保密信息范围、除外情形、资料返还与销毁义务等作出约定，可能导致权利义务不清。"
+      }
+    },
+    {
+      "name": "租赁期限超过法定上限",
+      "applies_to": ["租赁合同"],
+      "clause_groups": [
+        {
+          "role": "lease_term",
+          "match": {
+            "contains_any": ["租赁期限", "租期", "租赁期"]
+          }
+        },
+        {
+          "role": "exceed_limit",
+          "match": {
+            "contains_any": ["25年", "25 年", "三十年", "30年", "30 年", "超过二十年"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "租赁期限超过民法典规定的二十年上限"
+      },
+      "risk": {
+        "risk_type": "租赁期限超过法定上限",
+        "level": "high",
+        "confidence": 0.9,
+        "reason": "《民法典》第七百零五条规定，租赁期限不得超过二十年，超过部分无效。"
+      }
+    },
+    {
+      "name": "出租方任意涨租或单方解约",
+      "applies_to": ["租赁合同"],
+      "clause_groups": [
+        {
+          "role": "landlord_right",
+          "match": {
+            "contains_any": ["出租方有权", "甲方有权", "出租人有权"]
+          }
+        },
+        {
+          "role": "arbitrary_action",
+          "match": {
+            "contains_any": ["任意涨租", "任意提高租金", "单方解除", "单方解约", "随时解除", "无条件解除"]
+          }
+        }
+      ],
+      "edge": {
+        "type": "CONTRADICTS",
+        "reason": "出租方单方权利过大可能损害承租方权益"
+      },
+      "risk": {
+        "risk_type": "出租方任意涨租或单方解约",
+        "level": "medium",
+        "confidence": 0.8,
+        "reason": "赋予出租方任意涨租或单方解约权，排除承租方主要权利，显失公平。"
+      }
+    }
+  ]
+}
