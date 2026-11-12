@@ -1,0 +1,15 @@
+# 后端构建上下文忽略
+__pycache__/
+*.pyc
+*.pyo
+.env
+.git
+.gitignore
+.venv/
+venv/
+uploads/
+reports/
+tests/
+*.db
+*.sqlite3
+logs/

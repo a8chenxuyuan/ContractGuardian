@@ -29,10 +29,13 @@ backend/contract_guard.db
 
 # 基础设施二进制与运行时数据
 pg/
+pg_data/
 qdrant/
 storage/
 *.zip
 .qdrant-initialized
+postgress_data/
+redis_data/
 
 # 用户上传文件与生成报告
 backend/uploads/
@@ -52,3 +55,7 @@ logs/
 # 操作系统文件
 .DS_Store
 Thumbs.db
+
+# 前端构建产物
+frontend/dist/
+frontend/node_modules/
